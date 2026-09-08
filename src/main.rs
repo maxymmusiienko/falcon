@@ -7,6 +7,9 @@ struct Polynomial {
 }
 
 impl Polynomial {
+    //coef are in increasing order w.r.t power of x:
+    //exmpl: 5 + 3x + 4x^2
+    //index 0 of coefficients is coef for x^0
     fn new(coefficients: Vec<f64>) -> Polynomial {
         Polynomial { coefficients }
     }
@@ -28,6 +31,14 @@ impl Polynomial {
                 self.coefficients.push(polynomial.coefficients[self_len + i]);
             }
         }
+    }
+
+    fn f(&self, arg: f64) -> f64 {
+        let mut sum = self.coefficients[0];
+        for i in 1..self.coefficients.len() {
+            sum += self.coefficients[i] * arg.powf(i as f64);
+        }
+        sum
     }
 }
 
@@ -53,5 +64,7 @@ fn main() {
     println!("first poly is f3 = {}", polynomial3);
     println!("first poly is f4 = {}", polynomial4);
     polynomial.add(&polynomial4);
-    println!("f1 + f4 = {}", polynomial)
+    println!("f1 + f4 = {}", polynomial);
+    let val = polynomial.f(2.0);
+    println!("value of {} in arg = 2.0 = {}", polynomial, val);
 }
