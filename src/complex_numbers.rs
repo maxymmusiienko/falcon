@@ -22,7 +22,7 @@ impl Complex {
     pub(crate) fn to_polar(&self) -> ComplexPolar {
         let norm = (self.real * self.real + self.imag * self.imag).sqrt();
         let phi = self.imag.atan2(self.real);
-        ComplexPolar::new(norm, phi) // Змінено порядок на (norm, phi)
+        ComplexPolar::new(norm, phi)
     }
 
     pub(crate) fn pow(&self, power: f64) -> Complex {
