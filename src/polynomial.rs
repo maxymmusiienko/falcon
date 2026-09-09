@@ -1,4 +1,5 @@
 use std::fmt;
+use crate::complex_numbers::Complex;
 
 pub(crate) struct Polynomial {
     coefficients: Vec<f64>,
@@ -50,4 +51,8 @@ impl fmt::Display for Polynomial {
         builder.push_str(&format!("{:.2}", self.coefficients[0]));
         write!(f, "{}", builder)
     }
+}
+
+pub struct PolynomialFFT {
+    coefficients: Vec<Complex>,
 }
