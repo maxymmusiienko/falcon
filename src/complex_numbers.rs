@@ -24,6 +24,17 @@ impl Complex {
         let phi = self.imag.atan2(self.real);
         ComplexPolar::new(norm, phi) // Змінено порядок на (norm, phi)
     }
+
+    pub(crate) fn pow(&self, power: f64) -> Complex {
+        let polar = self.to_polar();
+        let res = polar.pow(power);
+        res.to_algebraic()
+    }
+
+    pub(crate) fn exp(power: &Complex) -> Complex {
+        Complex::new(power.real.exp() * power.imag.cos(),
+                     power.real.exp() * power.imag.sin())
+    }
 }
 
 impl fmt::Display for Complex {
@@ -42,11 +53,11 @@ impl ComplexPolar {
         ComplexPolar { norm, phi }
     }
 
-    pub(crate) fn to_algebraic(&self) -> Complex {
+    fn to_algebraic(&self) -> Complex {
         Complex::new(self.norm * self.phi.cos(), self.norm * self.phi.sin())
     }
 
-    pub(crate) fn pow(&self, power: f64) -> ComplexPolar {
+    fn pow(&self, power: f64) -> ComplexPolar {
         ComplexPolar::new(self.norm.powf(power), self.phi * power)
     }
 }
