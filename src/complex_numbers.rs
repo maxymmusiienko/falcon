@@ -54,7 +54,7 @@ impl fmt::Display for Complex {
         if self.imag > 0.0 {
             write!(f, "{} + {}i", self.real, self.imag)
         } else if self.imag < 0.0 {
-            write!(f, "{} - {}i", self.real, self.imag)
+            write!(f, "{} - {}i", self.real, -self.imag)
         } else {
             write!(f, "{}", self.real)
         }
