@@ -81,6 +81,28 @@ impl PolynomialFFT {
     pub(crate) fn new(values: Vec<Complex>) -> PolynomialFFT {
         PolynomialFFT { values }
     }
+
+    pub(crate) fn add(&self, polynomial: &PolynomialFFT) -> PolynomialFFT {
+        if self.values.len() != polynomial.values.len() {
+            panic!("PolynomialFFT must have the same length");
+        }
+        let mut res = Vec::new();
+        for i in 0..polynomial.values.len() {
+            res.push(self.values[i] + polynomial.values[i]);
+        }
+        PolynomialFFT::new(res)
+    }
+
+    pub(crate) fn multiply(&self, polynomial: &PolynomialFFT) -> PolynomialFFT {
+        if self.values.len() != polynomial.values.len() {
+            panic!("PolynomialFFT must have the same length");
+        }
+        let mut res = Vec::new();
+        for i in 0..polynomial.values.len() {
+            res.push(self.values[i] * polynomial.values[i]);
+        }
+        PolynomialFFT::new(res)
+    }
 }
 
 impl fmt::Display for PolynomialFFT {

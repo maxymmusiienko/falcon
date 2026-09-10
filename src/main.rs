@@ -21,4 +21,9 @@ fn main() {
 
     println!("{}", fft_polynomial1);
     println!("{}", fft_polynomial2);
+
+    let fft_sum = fft_polynomial1.add(&fft_polynomial2);
+    println!("{}", fft_sum);
+    let fft_mult = fft_polynomial1.multiply(&fft_polynomial2);
+    println!("{}", fft_mult);
 }
