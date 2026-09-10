@@ -39,6 +39,24 @@ impl Polynomial {
         }
         sum
     }
+
+    pub(crate) fn f_complex(&self, arg: &Complex) -> Complex{
+        let mut sum = Complex::new(self.coefficients[0], 0.0);
+        for i in 1..self.coefficients.len() {
+            let power = arg.pow(i as f64);
+            let complex_coef = Complex::new(self.coefficients[i], 0.0);
+            sum = sum + (complex_coef * power);
+        }
+        sum
+    }
+
+    pub(crate) fn fft(&self, roots: &Vec<Complex>) -> PolynomialFFT {
+        let mut values = Vec::new();
+        for root in roots {
+            values.push(self.f_complex(root));
+        }
+        PolynomialFFT::new(values)
+    }
 }
 
 impl fmt::Display for Polynomial {
@@ -54,5 +72,26 @@ impl fmt::Display for Polynomial {
 }
 
 pub struct PolynomialFFT {
-    coefficients: Vec<Complex>,
+    //values of polynomial in complex roots in rev clockwise order?
+    //todo ensure the correctness of the representation
+    values: Vec<Complex>,
+}
+
+impl PolynomialFFT {
+    pub(crate) fn new(values: Vec<Complex>) -> PolynomialFFT {
+        PolynomialFFT { values }
+    }
+}
+
+impl fmt::Display for PolynomialFFT {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut res = String::from("(");
+        for i in 0..self.values.len() - 1 {
+            res.push_str(self.values[i].to_string().as_str());
+            res.push_str(", " );
+        }
+        res.push_str(self.values.last().unwrap().to_string().as_str());
+        res.push_str(")");
+        write!(f, "{}", res)
+    }
 }

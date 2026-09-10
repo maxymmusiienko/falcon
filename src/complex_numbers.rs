@@ -52,11 +52,11 @@ impl Mul for Complex {
 impl fmt::Display for Complex {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.imag > 0.0 {
-            write!(f, "{} + {}i", self.real, self.imag)
+            write!(f, "{:.2} + {:.2}i", self.real, self.imag)
         } else if self.imag < 0.0 {
-            write!(f, "{} - {}i", self.real, -self.imag)
+            write!(f, "{:.2} - {:.2}i", self.real, -self.imag)
         } else {
-            write!(f, "{}", self.real)
+            write!(f, "{:.2}", self.real)
         }
     }
 }
