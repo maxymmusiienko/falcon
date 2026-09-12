@@ -9,12 +9,12 @@ const n: u16 = 512;
 const q: u16 = 12289;
 
 fn main() {
-    let complex_roots = falcon_config_scripts::find_complex_roots(2);
+    let complex_roots = falcon_config_scripts::find_complex_roots(4);
     for root in &complex_roots {
         println!("{}", root);
     }
-    let polynomial1 = Polynomial::new(vec![3.0, 2.0]);
-    let polynomial2 = Polynomial::new(vec![1.0, -1.0]);
+    let polynomial1 = Polynomial::new(vec![1.0, 2.0, -1.0, 0.0]);
+    let polynomial2 = Polynomial::new(vec![2.0, -1.0, 1.0, 1.0]);
 
     let fft_polynomial1 = polynomial1.fft(&complex_roots);
     let fft_polynomial2 = polynomial2.fft(&complex_roots);

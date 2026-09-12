@@ -103,6 +103,10 @@ impl PolynomialFFT {
         }
         PolynomialFFT::new(res)
     }
+
+    pub(crate) fn inv_fft(&self) -> Polynomial {
+        
+    }
 }
 
 impl fmt::Display for PolynomialFFT {
