@@ -33,24 +33,23 @@ impl Polynomial {
     }
 
     pub(crate) fn f(&self, arg: f64) -> f64 {
-        let mut sum = self.coefficients[0];
-        for i in 1..self.coefficients.len() {
-            sum += self.coefficients[i] * arg.powf(i as f64);
+        let mut sum = 0.0;
+        for &coef in self.coefficients.iter().rev() {
+            sum = sum * arg + coef;
         }
         sum
     }
 
-    pub(crate) fn f_complex(&self, arg: &Complex) -> Complex{
-        let mut sum = Complex::new(self.coefficients[0], 0.0);
-        for i in 1..self.coefficients.len() {
-            let power = arg.pow(i as f64);
-            let complex_coef = Complex::new(self.coefficients[i], 0.0);
-            sum = sum + (complex_coef * power);
+    pub(crate) fn f_complex(&self, arg: &Complex) -> Complex {
+        let mut sum = Complex::new(0.0, 0.0);
+        for &coef in self.coefficients.iter().rev() {
+            let complex_coef = Complex::new(coef, 0.0);
+            sum = sum * (*arg) + complex_coef;
         }
         sum
     }
 
-    pub(crate) fn fft(&self, roots: &Vec<Complex>) -> PolynomialFFT {
+    pub(crate) fn dft(&self, roots: &Vec<Complex>) -> PolynomialFFT {
         let mut values = Vec::new();
         for root in roots {
             values.push(self.f_complex(root));
@@ -104,9 +103,9 @@ impl PolynomialFFT {
         PolynomialFFT::new(res)
     }
 
-    pub(crate) fn inv_fft(&self) -> Polynomial {
+    //pub(crate) fn inv_fft(&self) -> Polynomial {
         
-    }
+    //}
 }
 
 impl fmt::Display for PolynomialFFT {

@@ -16,8 +16,8 @@ fn main() {
     let polynomial1 = Polynomial::new(vec![1.0, 2.0, -1.0, 0.0]);
     let polynomial2 = Polynomial::new(vec![2.0, -1.0, 1.0, 1.0]);
 
-    let fft_polynomial1 = polynomial1.fft(&complex_roots);
-    let fft_polynomial2 = polynomial2.fft(&complex_roots);
+    let fft_polynomial1 = polynomial1.dft(&complex_roots);
+    let fft_polynomial2 = polynomial2.dft(&complex_roots);
 
     println!("{}", fft_polynomial1);
     println!("{}", fft_polynomial2);
