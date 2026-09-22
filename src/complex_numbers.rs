@@ -1,10 +1,10 @@
 use std::fmt;
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Sub};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) struct Complex {
-    real: f64,
-    imag: f64,
+    pub real: f64,
+    pub imag: f64,
 }
 
 impl Complex {
@@ -35,6 +35,14 @@ impl Add for Complex {
 
     fn add(self, other: Self) -> Self {
         Complex::new(self.real + other.real, self.imag + other.imag)
+    }
+}
+
+impl Sub for Complex {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Complex::new(self.real - other.real, self.imag - other.imag)
     }
 }
 

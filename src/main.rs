@@ -4,26 +4,16 @@ mod falcon_config_scripts;
 
 use polynomial::Polynomial;
 use complex_numbers::Complex;
+use crate::polynomial::PolynomialFFT;
 
 const n: u16 = 512;
 const q: u16 = 12289;
 
 fn main() {
-    let complex_roots = falcon_config_scripts::find_complex_roots(4);
-    for root in &complex_roots {
-        println!("{}", root);
-    }
-    let polynomial1 = Polynomial::new(vec![1.0, 2.0, -1.0, 0.0]);
-    let polynomial2 = Polynomial::new(vec![2.0, -1.0, 1.0, 1.0]);
-
-    let fft_polynomial1 = polynomial1.dft(&complex_roots);
-    let fft_polynomial2 = polynomial2.dft(&complex_roots);
-
-    println!("{}", fft_polynomial1);
-    println!("{}", fft_polynomial2);
-
-    let fft_sum = fft_polynomial1.add(&fft_polynomial2);
-    println!("{}", fft_sum);
-    let fft_mult = fft_polynomial1.multiply(&fft_polynomial2);
-    println!("{}", fft_mult);
+    let pol : Polynomial = Polynomial::new(vec![5.0, 3.0, 1.0, 8.0]);
+    let res = pol.fft();
+    println!("{}", res);
+    
+    let res_inv = res.inv_fft();
+    println!("{}", res_inv);
 }

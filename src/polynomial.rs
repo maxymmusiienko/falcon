@@ -56,6 +56,20 @@ impl Polynomial {
         }
         PolynomialFFT::new(values)
     }
+
+    fn to_complex(&self) -> Vec<Complex> {
+        let mut values = Vec::new();
+        for &coef in self.coefficients.iter() {
+            values.push(Complex::new(coef, 0.0));
+        }
+        values
+    }
+
+    pub(crate) fn fft(&self) -> PolynomialFFT {
+        let complex_coefs = self.to_complex();
+        let fft = fft_routine(complex_coefs, false);
+        PolynomialFFT::new(fft)
+    }
 }
 
 impl fmt::Display for Polynomial {
@@ -71,7 +85,7 @@ impl fmt::Display for Polynomial {
 }
 
 pub struct PolynomialFFT {
-    //values of polynomial in complex roots in rev clockwise order?
+    //values of polynomial in complex roots in clockwise order?
     //todo ensure the correctness of the representation
     values: Vec<Complex>,
 }
@@ -103,9 +117,28 @@ impl PolynomialFFT {
         PolynomialFFT::new(res)
     }
 
-    //pub(crate) fn inv_fft(&self) -> Polynomial {
-        
-    //}
+    fn get_float_coefs(vec: &Vec<Complex>) -> Vec<f64> {
+        let mut res = Vec::new();
+        for i in 0..vec.len() {
+            res.push(vec[i].real);
+        }
+        res
+    }
+
+    pub(crate) fn inv_fft(&self) -> Polynomial {
+        let complex_coefs = self.values.clone();
+        let n = complex_coefs.len() as f64;
+
+        let mut inv_fft_result = fft_routine(complex_coefs, true);
+
+        for i in 0..inv_fft_result.len() {
+            inv_fft_result[i].real /= n;
+            inv_fft_result[i].imag /= n;
+        }
+
+        let float_coefs = PolynomialFFT::get_float_coefs(&inv_fft_result);
+        Polynomial::new(float_coefs)
+    }
 }
 
 impl fmt::Display for PolynomialFFT {
@@ -119,4 +152,45 @@ impl fmt::Display for PolynomialFFT {
         res.push_str(")");
         write!(f, "{}", res)
     }
+}
+
+fn fft_routine(pol: Vec<Complex>, inv: bool) -> Vec<Complex> {
+    let n = pol.len();
+    if n == 1 {
+        return pol;
+    }
+
+    let angle = if inv {
+        2.0 * std::f64::consts::PI / n as f64
+    } else {
+        -2.0 * std::f64::consts::PI / n as f64
+    };
+
+    let complex_arg = Complex::new(0.0, angle);
+    let w = Complex::exp(&complex_arg);
+
+    let mut pol_even: Vec<Complex> = Vec::with_capacity(n / 2);
+    let mut pol_odd: Vec<Complex> = Vec::with_capacity(n / 2);
+
+    for i in 0..n / 2 {
+        pol_even.push(pol[2 * i]);
+        pol_odd.push(pol[2 * i + 1]);
+    }
+
+    let y_even = fft_routine(pol_even, inv);
+    let y_odd = fft_routine(pol_odd, inv);
+
+    let mut y: Vec<Complex> = vec![Complex::new(0.0, 0.0); n];
+    let mut w_j = Complex::new(1.0, 0.0);
+
+    for j in 0..n / 2 {
+        let term = w_j * y_odd[j];
+
+        y[j] = y_even[j] + term;
+        y[j + n / 2] = y_even[j] - term;
+
+        w_j = w_j * w;
+    }
+
+    y
 }
