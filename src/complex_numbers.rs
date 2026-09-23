@@ -28,6 +28,10 @@ impl Complex {
         Complex::new(self.real.exp() * self.imag.cos(),
                      self.real.exp() * self.imag.sin())
     }
+    
+    pub(crate) fn conj(&self) -> Complex {
+        Complex::new(self.real, -self.imag)
+    }
 }
 
 impl Add for Complex {
@@ -52,7 +56,18 @@ impl Mul for Complex {
     fn mul(self, other: Self) -> Self {
         Complex::new(
             self.real * other.real - self.imag * other.imag,
-            self.imag * other.real + self.real * other.imag
+            self.imag * other.real + self.real * other.imag,
+        )
+    }
+}
+
+impl Mul<f64> for Complex {
+    type Output = Complex;
+
+    fn mul(self, other: f64) -> Complex {
+        Complex::new(
+            self.real * other,
+            self.imag * other
         )
     }
 }

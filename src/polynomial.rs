@@ -1,5 +1,6 @@
 use std::fmt;
 use crate::complex_numbers::Complex;
+use crate::falcon_config_scripts::find_complex_positive_image_roots;
 
 pub(crate) struct Polynomial {
     coefficients: Vec<f64>,
@@ -67,7 +68,7 @@ impl Polynomial {
 
     pub(crate) fn fft(&self) -> PolynomialFFT {
         let complex_coefs = self.to_complex();
-        let fft = fft_routine(complex_coefs, false);
+        let fft = PolynomialFFT::falcon_fft(complex_coefs);
         PolynomialFFT::new(fft)
     }
 }
@@ -85,7 +86,7 @@ impl fmt::Display for Polynomial {
 }
 
 pub struct PolynomialFFT {
-    //values of polynomial in complex roots in clockwise order?
+    //values of polynomial in complex roots in counter clockwise order?
     //todo ensure the correctness of the representation
     values: Vec<Complex>,
 }
@@ -129,15 +130,58 @@ impl PolynomialFFT {
         let complex_coefs = self.values.clone();
         let n = complex_coefs.len() as f64;
 
-        let mut inv_fft_result = fft_routine(complex_coefs, true);
-
-        for i in 0..inv_fft_result.len() {
-            inv_fft_result[i].real /= n;
-            inv_fft_result[i].imag /= n;
-        }
+        let inv_fft_result = Self::falcon_inv_fft(complex_coefs);
 
         let float_coefs = PolynomialFFT::get_float_coefs(&inv_fft_result);
         Polynomial::new(float_coefs)
+    }
+
+    pub fn falcon_fft(mut pol: Vec<Complex>) -> Vec<Complex> {
+        let n = pol.len();
+
+        let psi_angle = std::f64::consts::PI / n as f64;
+        let psi = Complex::new(0.0, psi_angle).exp();
+        let mut current_psi = Complex::new(1.0, 0.0);
+
+        for j in 0..n {
+            pol[j] = pol[j] * current_psi;
+            current_psi = current_psi * psi;
+        }
+
+        fft_routine(pol, false)
+    }
+
+    pub fn falcon_inv_fft(pol: Vec<Complex>) -> Vec<Complex> {
+        let n = pol.len();
+
+        let mut res = fft_routine(pol, true);
+
+        let psi_angle = -std::f64::consts::PI / n as f64;
+        let psi = Complex::new(0.0, psi_angle).exp();
+        let mut current_psi = Complex::new(1.0, 0.0);
+
+        let inv_n = 1.0 / n as f64;
+
+        for j in 0..n {
+            res[j] = res[j] * current_psi * inv_n;
+            current_psi = current_psi * psi;
+        }
+
+        res
+    }
+
+    pub(crate) fn splitfft(&self) -> (PolynomialFFT, PolynomialFFT) {
+        let n = self.values.len();
+        let mut pol_even = PolynomialFFT::new(Vec::with_capacity(n / 2));
+        let mut pol_odd = PolynomialFFT::new(Vec::with_capacity(n / 2));
+        let roots = find_complex_positive_image_roots(n);
+        for i in 0..n / 2 {
+            let even_arg = (self.values[i] + self.values[i + n / 2]) * 0.5;
+            pol_even.values.push(even_arg);
+            let odd_arg = (self.values[i] - self.values[i + n / 2]) * 0.5 * roots[i].conj();
+            pol_odd.values.push(odd_arg);
+        }
+        (pol_even, pol_odd)
     }
 }
 
@@ -161,9 +205,9 @@ fn fft_routine(pol: Vec<Complex>, inv: bool) -> Vec<Complex> {
     }
 
     let angle = if inv {
-        2.0 * std::f64::consts::PI / n as f64
-    } else {
         -2.0 * std::f64::consts::PI / n as f64
+    } else {
+        2.0 * std::f64::consts::PI / n as f64
     };
 
     let complex_arg = Complex::new(0.0, angle);
