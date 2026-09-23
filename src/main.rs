@@ -24,4 +24,10 @@ fn main() {
     let p2_int = p2.inv_fft();
     println!("{}", p1_int);
     println!("{}", p2_int);
+
+    let mergedfft = PolynomialFFT::mergefft(&p1, &p2);
+    println!("{}", mergedfft);
+
+    let mergedint = mergedfft.inv_fft();
+    println!("{}", mergedint);
 }

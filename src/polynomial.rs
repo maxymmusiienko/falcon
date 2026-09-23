@@ -1,6 +1,6 @@
 use std::fmt;
 use crate::complex_numbers::Complex;
-use crate::falcon_config_scripts::find_complex_positive_image_roots;
+use crate::falcon_config_scripts::{find_complex_positive_image_roots, find_complex_roots};
 
 pub(crate) struct Polynomial {
     coefficients: Vec<f64>,
@@ -136,7 +136,7 @@ impl PolynomialFFT {
         Polynomial::new(float_coefs)
     }
 
-    pub fn falcon_fft(mut pol: Vec<Complex>) -> Vec<Complex> {
+    fn falcon_fft(mut pol: Vec<Complex>) -> Vec<Complex> {
         let n = pol.len();
 
         let psi_angle = std::f64::consts::PI / n as f64;
@@ -151,7 +151,7 @@ impl PolynomialFFT {
         fft_routine(pol, false)
     }
 
-    pub fn falcon_inv_fft(pol: Vec<Complex>) -> Vec<Complex> {
+    fn falcon_inv_fft(pol: Vec<Complex>) -> Vec<Complex> {
         let n = pol.len();
 
         let mut res = fft_routine(pol, true);
@@ -182,6 +182,22 @@ impl PolynomialFFT {
             pol_odd.values.push(odd_arg);
         }
         (pol_even, pol_odd)
+    }
+
+    pub(crate) fn mergefft(even_polynomial: &PolynomialFFT, odd_polynomial: &PolynomialFFT) -> PolynomialFFT {
+        let n = even_polynomial.values.len() * 2;
+        //todo take the roots from cache
+        let roots = find_complex_positive_image_roots(n);
+        let mut merged_values = vec![Complex::new(0.0, 0.0); n];
+
+        for i in 0..n / 2 {
+            let zeta = roots[i];
+            let term = zeta * odd_polynomial.values[i];
+            merged_values[i] = even_polynomial.values[i] + term;
+            merged_values[i + n / 2] = even_polynomial.values[i] - term;
+        }
+
+        PolynomialFFT::new(merged_values)
     }
 }
 
