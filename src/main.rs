@@ -1,17 +1,14 @@
-mod complex_numbers;
-mod polynomial;
-mod falcon_config_scripts;
+mod math;
+mod utils;
 
-use polynomial::Polynomial;
-use complex_numbers::Complex;
-use crate::falcon_config_scripts::find_complex_roots;
-use crate::polynomial::PolynomialFFT;
+use math::polynomial::Polynomial;
+use math::polynomial::PolynomialFFT;
 
 const n: u16 = 512;
 const q: u16 = 12289;
 
 fn main() {
-    let pol : Polynomial = Polynomial::new(vec![5.0, 3.0, 1.0, 8.0]);
+    let pol: Polynomial = Polynomial::new(vec![5.0, 3.0, 1.0, 8.0]);
     println!("{}", pol);
     let res = pol.fft();
     println!("{}", res);

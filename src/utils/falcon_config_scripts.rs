@@ -1,6 +1,10 @@
-use crate::complex_numbers::Complex;
 
- pub(crate) fn find_complex_roots(power: usize) -> Vec<Complex> {
+
+//todo save roots in constants?
+
+use crate::math::complex_numbers::Complex;
+
+pub(crate) fn find_complex_roots(power: usize) -> Vec<Complex> {
      //find complex roots for mod polynomial of the type x^n + 1, where n = 2k
      //todo add error handling
     let mut complex_roots = Vec::new();
@@ -24,4 +28,7 @@ pub(crate) fn find_complex_positive_image_roots(power: usize) -> Vec<Complex> {
     complex_roots
 }
 
-//todo save complex roots in constants?
+//pub(crate) fn find_ntt_roots(prime: usize) -> Vec<f64> {
+//    let mut roots = Vec::new();
+
+//}
