@@ -1,5 +1,6 @@
 mod math;
 mod utils;
+mod crypto;
 
 use math::polynomial::Polynomial;
 use math::polynomial::PolynomialFFT;

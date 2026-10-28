@@ -1,5 +1,5 @@
 use crate::math::complex_numbers::Complex;
-use crate::math::fft::falcon_inv_fft;
+use crate::math::fft::FFTUtil;
 use crate::math::polynomial::Polynomial;
 use crate::utils::falcon_config_scripts::find_complex_positive_image_roots;
 use std::fmt;
@@ -49,7 +49,7 @@ impl PolynomialFFT {
         let complex_coefs = self.values.clone();
         let n = complex_coefs.len() as f64;
 
-        let inv_fft_result = falcon_inv_fft(complex_coefs);
+        let inv_fft_result = FFTUtil::falcon_inv_fft(complex_coefs);
 
         let float_coefs = PolynomialFFT::get_float_coefs(&inv_fft_result);
         Polynomial::new(float_coefs)
@@ -59,6 +59,7 @@ impl PolynomialFFT {
         let n = self.values.len();
         let mut pol_even = PolynomialFFT::new(Vec::with_capacity(n / 2));
         let mut pol_odd = PolynomialFFT::new(Vec::with_capacity(n / 2));
+        //todo precompute it, use context
         let roots = find_complex_positive_image_roots(n);
         for i in 0..n / 2 {
             let even_arg = (self.values[i] + self.values[i + n / 2]) * 0.5;
@@ -71,7 +72,7 @@ impl PolynomialFFT {
 
     pub(crate) fn mergefft(even_polynomial: &PolynomialFFT, odd_polynomial: &PolynomialFFT) -> PolynomialFFT {
         let n = even_polynomial.values.len() * 2;
-        //todo take the roots from cache
+        //todo precompute it, use context
         let roots = find_complex_positive_image_roots(n);
         let mut merged_values = vec![Complex::new(0.0, 0.0); n];
 
