@@ -2,7 +2,6 @@ use crate::math::complex_numbers::Complex;
 use crate::math::polynomial::Polynomial;
 
 pub(crate) struct FFTUtil {
-    
 }
 
 impl FFTUtil {
@@ -85,6 +84,13 @@ impl FFTUtil {
         let p1_fft = p1.fft();
         let p2_fft = p2.fft();
         let res_fft = p1_fft.multiply_fft(&p2_fft);
+        res_fft.inv_fft()
+    }
+
+    pub(crate) fn divide_two_polynomials(p1: &Polynomial, p2: &Polynomial) -> Polynomial {
+        let p1_fft = p1.fft();
+        let p2_fft = p2.fft();
+        let res_fft = p1_fft.divide_fft(&p2_fft);
         res_fft.inv_fft()
     }
 }

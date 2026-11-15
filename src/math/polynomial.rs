@@ -3,7 +3,6 @@ use crate::math::complex_numbers::Complex;
 use crate::math::fft::FFTUtil;
 pub(crate) use crate::math::polynomial_fft::PolynomialFFT;
 
-//todo split polynomials in different files
 pub(crate) struct Polynomial {
     pub(crate) coefficients: Vec<f64>,
 }
@@ -110,7 +109,7 @@ impl Polynomial {
         Polynomial {coefficients: new_coeffs}
     }
 
-    fn mul_by_scalar(&self, scalar: f64) -> Polynomial {
+    pub(crate) fn mul_by_scalar(&self, scalar: f64) -> Polynomial {
         let new_coeffs = self.coefficients.iter().map(|&c| c * scalar).collect();
         Polynomial {coefficients: new_coeffs}
     }
@@ -135,8 +134,8 @@ impl Polynomial {
         let n = self.coefficients.len();
         let mut res : Vec<f64> = Vec::with_capacity(n * 2);
         for i in 0..n {
-            res.push(0.0);
             res.push(self.coefficients[i]);
+            res.push(0.0);
         }
         Polynomial::new(res)
     }
@@ -144,10 +143,59 @@ impl Polynomial {
     pub(crate) fn get_polynomial_adjoint(&self) -> Polynomial {
         let n = self.coefficients.len();
         let mut res = self.coefficients.clone();
-        for i in 1..n {
-            res[i] *= -1.0;
+        for i in (1..n).step_by(2) {
+            res[i] *= -1.0; // change sign for odd coefs x^1, x^3, x^5...
         }
         Polynomial::new(res)
+    }
+
+    pub(crate) fn get_hermitian_adjoint(&self) -> Polynomial {
+        let n = self.coefficients.len();
+        let mut res = Vec::with_capacity(n);
+        res.push(self.coefficients[0]);
+        for i in (1..n).rev() {
+            res.push(-self.coefficients[i]);
+        }
+        Polynomial::new(res)
+    }
+
+    pub(crate) fn dot(&self, pol: &Polynomial) -> f64 {
+        let mut res = 0.0;
+        if self.coefficients.len() != pol.coefficients.len() {
+            panic!("Length of polynomials for dot product must be equal!");
+        }
+        let n = pol.coefficients.len();
+        for i in 0..n {
+            res += self.coefficients[i] * pol.coefficients[i];
+        }
+        res
+    }
+
+    pub(crate) fn add_new(&self, other: &Polynomial) -> Polynomial {
+        let coeffs = self.coefficients
+            .iter()
+            .zip(other.coefficients.iter())
+            .map(|(a, b)| a + b)
+            .collect();
+        Polynomial::new(coeffs)
+    }
+
+    pub(crate) fn sub(&mut self, other: &Polynomial) {
+        for (a, b) in self.coefficients.iter_mut().zip(other.coefficients.iter()) {
+            *a -= *b;
+        }
+    }
+
+    pub(crate) fn round_coefficients(&mut self) {
+        self.coefficients
+            .iter_mut()
+            .for_each(|c| *c = c.round());
+    }
+
+    pub(crate) fn is_zero(&self) -> bool {
+        self.coefficients
+            .iter()
+            .all(|&c| c == 0.0)
     }
 }
 

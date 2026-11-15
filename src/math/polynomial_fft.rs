@@ -37,6 +37,24 @@ impl PolynomialFFT {
         PolynomialFFT::new(res)
     }
 
+    pub(crate) fn divide_fft(&self, polynomial: &PolynomialFFT) -> PolynomialFFT {
+        if self.values.len() != polynomial.values.len() {
+            panic!("PolynomialFFT must have the same length");
+        }
+
+        let divide_element = |(a, b): (&Complex, &Complex)| -> Complex {
+            Complex::new(a.real / b.real, a.imag / b.real)
+        };
+
+        let values = self.values
+            .iter()
+            .zip(polynomial.values.iter())
+            .map(divide_element)
+            .collect();
+
+        PolynomialFFT { values }
+    }
+    
     fn get_float_coefs(vec: &Vec<Complex>) -> Vec<f64> {
         let mut res = Vec::new();
         for i in 0..vec.len() {
